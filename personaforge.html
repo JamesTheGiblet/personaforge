@@ -1,150 +1,540 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PersonaForge // Boot Sequence</title>
+    <title>PersonaForge - Personality Evolution Simulator</title>
     <style>
+        :root {
+            --primary: #ffd700;
+            --secondary: #7ec7ff;
+            --accent: #ef4444;
+            --bg: #181a20;
+            --panel: #23252b;
+            --text: #e0e0e0;
+        }
         body {
+            background: linear-gradient(135deg, var(--bg), #23252b);
+            color: var(--text);
+            font-family: 'Segoe UI', Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #0a0a0a;
-            color: #00ff00;
-            font-family: 'Courier New', monospace;
-            overflow: hidden;
-            height: 100vh;
+        }
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: var(--panel);
+            border-radius: 16px;
+            box-shadow: 0 6px 32px rgba(0,0,0,0.5);
+            padding: 40px 32px;
+        }
+        h1 {
+            font-size: 3rem;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 30px rgba(251, 191, 36, 0.3);
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .tagline {
+            font-size: 1.3rem;
+            color: #94a3b8;
+            text-align: center;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+        .section {
+            margin-bottom: 36px;
+        }
+        h2 {
+            color: var(--primary);
+            margin-top: 0;
+        }
+        ul, ol {
+            margin-left: 1.5em;
+        }
+        .sim-panel {
+            background: rgba(30,41,59,0.8);
+            border-radius: 10px;
+            padding: 24px 20px;
+        .emotion-bar {
+            height: 18px;
+            border-radius: 8px;
+            margin: 8px 0;
+            transition: width 0.7s, background 0.5s;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.15);
+            background: linear-gradient(90deg, #7ec7ff, #ffd700);
+        }
+        .avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: #23252b;
             display: flex;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
         }
-
-        #screen {
-            position: relative;
-            width: 100%;
-            height: 100%;
+            margin-bottom: 32px;
+            border-left: 4px solid var(--primary);
         }
-
-        #circuit-board {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0.1;
-            background-image: 
-                linear-gradient(90deg, transparent 79%, rgba(0, 255, 0, 0.1) 80%, transparent 81%),
-                linear-gradient(transparent 79%, rgba(0, 255, 0, 0.1) 80%, transparent 81%);
-            background-size: 50px 50px;
+        .profile-builder {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 24px;
         }
-
-        #terminal {
-            position: relative;
-            z-index: 2;
-            padding: 2em;
-            max-width: 800px;
+        label {
+            font-weight: bold;
+            margin-bottom: 4px;
         }
-
-        #output {
-            margin-bottom: 1em;
-            line-height: 1.5;
+        input, select {
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #444;
+            background: #23252b;
+            color: var(--text);
+            font-size: 1rem;
         }
-
-        .prompt { color: #00ff00; }
-        .system { color: #ffff00; }
-        .input-line { display: flex; }
-        #command-input { 
-            background: transparent; 
-            border: none; 
-            color: #00ff00; 
-            font-family: 'Courier New', monospace;
-            font-size: 1em;
-            outline: none;
-            flex-grow: 1;
-            margin-left: 8px;
+        button {
+            background: var(--primary);
+            color: #23252b;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 20px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.2s;
         }
-
-        .blink { animation: blink 1s step-end infinite; }
-
-        @keyframes blink {
-            from, to { opacity: 1; }
-            50% { opacity: 0; }
+        button:hover {
+            background: var(--secondary);
+            color: #181a20;
+        }
+        .scenario-list {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+        .scenario-btn {
+            background: #475569;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 18px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .scenario-btn.active, .scenario-btn:hover {
+            background: var(--secondary);
+            color: #181a20;
+        }
+        .evolution-log {
+            background: #22242a;
+            border-radius: 10px;
+            padding: 18px;
+            font-size: 1.05rem;
+            margin-bottom: 10px;
+            color: var(--primary);
+            min-height: 60px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+            transition: background 0.5s;
+        }
+        .adversity-bar, .growth-bar {
+            height: 18px;
+            border-radius: 8px;
+            margin: 8px 0;
+            transition: width 0.7s, background 0.5s;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.15);
+        }
+        .adversity-bar {
+            background: linear-gradient(90deg, #ef4444, #ffd700);
+        }
+        .growth-bar {
+            background: linear-gradient(90deg, #10b981, #7ec7ff);
+        }
+        .license {
+            font-size: 0.95em;
+            color: #888;
+            margin-top: 32px;
+            text-align: center;
+        }
+        a {
+            color: #7ec7ff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 600px) {
+            .container { padding: 10px; }
+            h1 { font-size: 2.1rem; }
+            .sim-panel { padding: 12px 8px; }
         }
     </style>
 </head>
 <body>
-    <div id="screen">
-        <div id="circuit-board"></div>
-        <div id="terminal">
-            <div id="output">
-                <div>> PersonaForge v0.1 // Initializing Core Systems...</div>
-                <div>> System Check: Neural Interface... <span class="system">[OK]</span></div>
-                <div>> System Check: Perpetual Storm... <span class="system">[CONFIRMED]</span></div>
-                <div>> System Check: Builder-OS Kernel... <span class="system">[LOADED]</span></div>
-                <div>> ...</div>
-                <div>> All systems operational.</div>
-                <div>> Welcome, Builder.</div>
-                <div>> Your mind is not a problem to be solved.</div>
-                <div>> It is a system to be understood.</div>
-                <br>
-                <div>> Let's begin the forge.</div>
+        <div class="container">
+            <h1>🧬 PersonaForge</h1>
+        <div class="container">
+            <h1>🧬 PersonaForge</h1>
+            <div class="tagline">Personality Evolution Simulator</div>
+                <h2>Build Your Personality Profile</h2>
+                <form id="profileForm" class="profile-builder">
+                    <label for="trait">Core Trait:</label>
+                    <select id="trait" required>
+                        <option value="Resilience">Resilience</option>
+                        <option value="Empathy">Empathy</option>
+                        <option value="Creativity">Creativity</option>
+                        <option value="Focus">Focus</option>
+                        <option value="Adaptability">Adaptability</option>
+                    </select>
+                    <label for="value">Core Value:</label>
+                    <select id="value" required>
+                        <option value="Growth">Growth</option>
+                        <option value="Connection">Connection</option>
+                        <option value="Mastery">Mastery</option>
+                        <option value="Freedom">Freedom</option>
+                        <option value="Purpose">Purpose</option>
+                    </select>
+                    <label for="stressor">Main Stressor:</label>
+                    <select id="stressor" required>
+                        <option value="Isolation">Isolation</option>
+                        <option value="Overwhelm">Overwhelm</option>
+                        <option value="Criticism">Criticism</option>
+                        <option value="Uncertainty">Uncertainty</option>
+                        <option value="Conflict">Conflict</option>
+                    </select>
+                    <label for="coping">Coping Style:</label>
+                    <select id="coping" required>
+                        <option value="Reflection">Reflection</option>
+                        <option value="Action">Action</option>
+                        <option value="Support">Support</option>
+                        <option value="Escape">Escape</option>
+                        <option value="Planning">Planning</option>
+                    </select>
+                    <label for="environment">Preferred Environment:</label>
+                    <select id="environment" required>
+                        <option value="Quiet">Quiet</option>
+                        <option value="Collaborative">Collaborative</option>
+                        <option value="Dynamic">Dynamic</option>
+                        <option value="Structured">Structured</option>
+                        <option value="Flexible">Flexible</option>
+                    </select>
+                    <button type="submit">Create Profile</button>
+                </form>
+                <div id="profileSummary"></div>
             </div>
-            <div class="input-line">
-                <span class="prompt">></span>
-                <input type="text" id="command-input" autofocus placeholder="Type 'begin'...">
+                <div class="section sim-panel">
+                    <h2>Run Life Scenario</h2>
+                    <div class="scenario-list">
+                        <button class="scenario-btn" data-scenario="Team Meeting">Team Meeting</button>
+                        <button class="scenario-btn" data-scenario="Deep Work Session">Deep Work Session</button>
+                        <button class="scenario-btn" data-scenario="Social Event">Social Event</button>
+                        <button class="scenario-btn" data-scenario="Career Challenge">Career Challenge</button>
+                        <button class="scenario-btn" data-scenario="Personal Crisis">Personal Crisis</button>
+                    </div>
+                    <div class="margin-top-18">
+                        <button id="autoRunBtn">Start Auto-Evolution</button>
+                        <button id="stopAutoBtn" class="display-none">Stop</button>
+                    </div>
+                    <div id="scenarioResult"></div>
+                </div>
+            <div class="section">
+                <h2>Personality Evolution Log</h2>
+                <div id="evolutionLog" class="evolution-log"></div>
+                <h2>Lifeline</h2>
+                <div id="lifelineContainer" class="margin-top-24 overflow-x-auto">
+                    <svg id="lifelineSVG" width="100%" height="120" class="svg-bg"></svg>
+                </div>
             </div>
         </div>
-    </div>
-
     <script>
-        const output = document.getElementById('output');
-        const input = document.getElementById('command-input');
-
-        // Function to add a new line to the output
-        function addLine(text, delay = 0) {
-            setTimeout(() => {
-                const newLine = document.createElement('div');
-                newLine.innerHTML = text;
-                output.appendChild(newLine);
-                output.scrollTop = output.scrollHeight; // Auto-scroll to bottom
-            }, delay);
-        }
-
-        // Function to simulate the "begin" command
-        function beginForge() {
-            // Clear the input
-            input.value = '';
-            input.placeholder = '';
-
-            // Start the forge sequence
-            addLine('> Initializing PersonaForge Simulation...', 100);
-            addLine('> Loading Empathy Core parameters...', 800);
-            addLine('> Mapping Social Interface protocols...', 1500);
-            addLine('> Calibrating Legacy Drive...', 2200);
-            addLine('> ...', 2900);
-            addLine('> <span class="system">Ready to simulate your first scenario.</span>', 3500);
-            addLine('> <a href="#" style="color: #00ffff;">[TEAM_MEETING.exe]</a> approaching.', 4000);
-            addLine('> <a href="#" style="color: #00ffff;">[DEEP_WORK_SESSION.exe]</a> loaded.', 4500);
-            addLine('> Click a scenario to run simulation.', 5000);
-        }
-
-        // Handle input
-        input.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                const command = this.value.trim().toLowerCase();
-                if (command === 'begin') {
-                    beginForge();
-                } else {
-                    addLine(`<span class="prompt">></span> ${this.value}`);
-                    addLine(`> Command not recognized. Type 'begin' to start.`);
-                    this.value = '';
-                }
+        // Emotion and social maps
+        let emotionMap = {
+            Hopeful: '😊',
+            Anxious: '😟',
+            Frustrated: '😠',
+            Happy: '😃',
+            Reflective: '🤔'
+        };
+        let socialMap = {
+            Supportive: '👥',
+            Distant: '🧑‍🦯',
+            Conflicted: '⚡',
+            Growing: '🌱',
+            Isolated: '🧑'
+        };
+        // Richer scenarios
+        const scenarios = [
+            {
+                name: 'Job Loss',
+                description: 'You lose your job unexpectedly. How do you respond?',
+                choices: ['Seek support', 'Reflect and plan', 'Take immediate action', 'Withdraw'],
+                effects: [
+                    {emotion:'Anxious', adversity:3, growth:2, trait:'Resilience'},
+                    {emotion:'Reflective', adversity:2, growth:3, trait:'Planning'},
+                    {emotion:'Frustrated', adversity:4, growth:1, trait:'Action'},
+                    {emotion:'Isolated', adversity:5, growth:0, trait:'Resilience'}
+                ]
+            },
+            {
+                name: 'Relationship Conflict',
+                description: 'A close relationship hits a rough patch.',
+                choices: ['Communicate openly', 'Take space', 'Seek advice', 'Ignore'],
+                effects: [
+                    {emotion:'Conflicted', adversity:3, growth:2, trait:'Empathy'},
+                    {emotion:'Distant', adversity:2, growth:1, trait:'Reflection'},
+                    {emotion:'Supportive', adversity:2, growth:3, trait:'Support'},
+                    {emotion:'Frustrated', adversity:4, growth:0, trait:'Resilience'}
+                ]
+            },
+            {
+                name: 'Creative Breakthrough',
+                description: 'You have a sudden burst of inspiration.',
+                choices: ['Share with others', 'Work alone', 'Document ideas', 'Ignore'],
+                effects: [
+                    {emotion:'Happy', adversity:0, growth:4, trait:'Creativity'},
+                    {emotion:'Reflective', adversity:1, growth:3, trait:'Focus'},
+                    {emotion:'Hopeful', adversity:0, growth:3, trait:'Mastery'},
+                    {emotion:'Frustrated', adversity:1, growth:0, trait:'Resilience'}
+                ]
+            },
+            {
+                name: 'Illness',
+                description: 'You face a health challenge.',
+                choices: ['Seek help', 'Rest', 'Push through', 'Ignore'],
+                effects: [
+                    {emotion:'Supportive', adversity:3, growth:2, trait:'Resilience'},
+                    {emotion:'Reflective', adversity:2, growth:2, trait:'Reflection'},
+                    {emotion:'Frustrated', adversity:4, growth:1, trait:'Action'},
+                    {emotion:'Isolated', adversity:5, growth:0, trait:'Resilience'}
+                ]
+            },
+            {
+                name: 'Move to New City',
+                description: 'You move to a new city and start fresh.',
+                choices: ['Explore', 'Connect with locals', 'Focus on work', 'Stay home'],
+                effects: [
+                    {emotion:'Hopeful', adversity:2, growth:3, trait:'Adaptability'},
+                    {emotion:'Supportive', adversity:1, growth:3, trait:'Connection'},
+                    {emotion:'Mastery', adversity:2, growth:2, trait:'Focus'},
+                    {emotion:'Isolated', adversity:3, growth:0, trait:'Resilience'}
+                ]
             }
-        });
+        ];
+        // Personality profile state
+        let profile = null;
+        let evolutionHistory = [];
+        let autoRunInterval = null;
 
-        // Add blinking cursor effect to input
-        setInterval(() => {
-            input.placeholder = input.placeholder ? '' : '|';
-        }, 500);
+            document.getElementById('profileForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                profile = {
+                    trait: document.getElementById('trait').value,
+                    value: document.getElementById('value').value,
+                    stressor: document.getElementById('stressor').value,
+                    coping: document.getElementById('coping').value,
+                    environment: document.getElementById('environment').value,
+                    adversity: 0,
+                    growth: 0
+                };
+                        document.getElementById('profileSummary').innerHTML = `
+                            <h3>Your Profile</h3>
+                            <ul>
+                                <li><strong>Trait:</strong> <span style="color:#ffd700;transition:color 0.5s;">${profile.trait}</span></li>
+                                <li><strong>Value:</strong> <span style="color:#7ec7ff;transition:color 0.5s;">${profile.value}</span></li>
+                                <li><strong>Stressor:</strong> <span style="color:#ef4444;transition:color 0.5s;">${profile.stressor}</span></li>
+                                <li><strong>Coping Style:</strong> <span style="color:#10b981;transition:color 0.5s;">${profile.coping}</span></li>
+                                <li><strong>Environment:</strong> <span style="color:#94a3b8;transition:color 0.5s;">${profile.environment}</span></li>
+                            </ul>
+                            <div class="margin-top-10">
+                                <div>Adversity</div>
+                                <div class="adversity-bar" id="adversityBar"></div>
+                                <div>Growth</div>
+                                <div class="growth-bar" id="growthBar"></div>
+                            </div>
+                        `;
+                        // Set bar widths via JS for adversity/growth
+                        const advBar = document.getElementById('adversityBar');
+                        if (advBar) advBar.style.width = Math.min(profile.adversity*12,300) + 'px';
+                        const grBar = document.getElementById('growthBar');
+                        if (grBar) grBar.style.width = Math.min(profile.growth*12,300) + 'px';
+                logEvolution(`Profile created: ${profile.trait}, ${profile.value}, ${profile.stressor}, ${profile.coping}, ${profile.environment}`);
+            });
+
+                document.querySelectorAll('.scenario-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        if (!profile) {
+                            document.getElementById('scenarioResult').innerHTML = '<span style="color:var(--accent)">Please create your profile first.</span>';
+                            return;
+                        }
+                        document.querySelectorAll('.scenario-btn').forEach(b => b.classList.remove('active'));
+                        this.classList.add('active');
+                        runScenario(this.dataset.scenario);
+                    });
+                });
+
+                document.getElementById('autoRunBtn').addEventListener('click', function() {
+                    if (!profile) {
+                        document.getElementById('scenarioResult').innerHTML = '<span style="color:var(--accent)">Please create your profile first.</span>';
+                        return;
+                    }
+                    this.style.display = 'none';
+                    document.getElementById('stopAutoBtn').style.display = '';
+                    autoRunInterval = setInterval(() => {
+                        const scenarios = ['Team Meeting','Deep Work Session','Social Event','Career Challenge','Personal Crisis'];
+                        const nextScenario = scenarios[Math.floor(Math.random()*scenarios.length)];
+                        runScenario(nextScenario);
+                    }, 1800);
+                });
+                document.getElementById('stopAutoBtn').addEventListener('click', function() {
+                    if (autoRunInterval) clearInterval(autoRunInterval);
+                    autoRunInterval = null;
+                    this.style.display = 'none';
+                    document.getElementById('autoRunBtn').style.display = '';
+                });
+
+            function runScenario(scenario) {
+                // Dynamic logic: adversity, growth, trait/value changes
+                let result = '';
+                let evolution = '';
+                let adversityChange = Math.floor(Math.random()*3)+1;
+                let growthChange = Math.floor(Math.random()*2)+1;
+                let adversityEvent = '';
+                let growthEvent = '';
+                switch(scenario) {
+                    case 'Team Meeting':
+                        result = `In a Team Meeting, your ${profile.trait} and ${profile.value} help you navigate group dynamics, but ${profile.stressor} may challenge you.`;
+                        adversityEvent = 'Faced social stress.';
+                        growthEvent = 'Improved collaboration.';
+                        profile.adversity += adversityChange;
+                        profile.growth += growthChange;
+                        if (profile.trait === 'Empathy') profile.trait = 'Collaboration';
+                        evolution = `Trait evolved to ${profile.trait}. Adversity +${adversityChange}, Growth +${growthChange}`;
+                        break;
+                    case 'Deep Work Session':
+                        result = `During Deep Work, your ${profile.trait} and ${profile.coping} style support focus, but ${profile.stressor} can interrupt flow.`;
+                        adversityEvent = 'Struggled with distraction.';
+                        growthEvent = 'Gained mastery.';
+                        profile.adversity += adversityChange;
+                        profile.growth += growthChange;
+                        if (profile.value === 'Growth') profile.value = 'Mastery';
+                        evolution = `Value evolved to ${profile.value}. Adversity +${adversityChange}, Growth +${growthChange}`;
+                        break;
+                    case 'Social Event':
+                        result = `At a Social Event, your ${profile.value} and ${profile.environment} shape your experience. ${profile.stressor} may surface.`;
+                        adversityEvent = 'Felt isolated.';
+                        growthEvent = 'Expanded adaptability.';
+                        profile.adversity += adversityChange;
+                        profile.growth += growthChange;
+                        if (profile.trait === 'Resilience') profile.trait = 'Adaptability';
+                        evolution = `Trait evolved to ${profile.trait}. Adversity +${adversityChange}, Growth +${growthChange}`;
+                        break;
+                    case 'Career Challenge':
+                        result = `Facing a Career Challenge, your ${profile.trait} and ${profile.coping} style are tested. ${profile.stressor} is present.`;
+                        adversityEvent = 'Encountered major setback.';
+                        growthEvent = 'Built resilience.';
+                        profile.adversity += adversityChange+1;
+                        profile.growth += growthChange+1;
+                        if (profile.value === 'Mastery') profile.value = 'Purpose';
+                        evolution = `Value evolved to ${profile.value}. Adversity +${adversityChange+1}, Growth +${growthChange+1}`;
+                        break;
+                    case 'Personal Crisis':
+                        result = `In a Personal Crisis, your ${profile.coping} style and ${profile.environment} are crucial. ${profile.stressor} is intense.`;
+                        adversityEvent = 'Faced deep adversity.';
+                        growthEvent = 'Gained insight.';
+                        profile.adversity += adversityChange+2;
+                        profile.growth += growthChange+2;
+                        if (profile.trait === 'Adaptability') profile.trait = 'Insight';
+                        evolution = `Trait evolved to ${profile.trait}. Adversity +${adversityChange+2}, Growth +${growthChange+2}`;
+                        break;
+                    default:
+                        result = 'Scenario not found.';
+                        evolution = '';
+                }
+                document.getElementById('scenarioResult').innerHTML = `<div style="padding:12px 0;animation:fadein 0.7s;"><span style="font-size:1.1rem;color:#ffd700;">${result}</span><br><span style="color:#ef4444;font-weight:bold;">${adversityEvent}</span> <span style="color:#10b981;font-weight:bold;">${growthEvent}</span><br><strong>Adversity:</strong> <span style="color:#ef4444;">${profile.adversity}</span> <strong>Growth:</strong> <span style="color:#10b981;">${profile.growth}</span></div>`;
+                document.getElementById('profileSummary').innerHTML = `
+                    <h3>Your Profile</h3>
+                    <ul>
+                        <li><strong>Trait:</strong> ${profile.trait}</li>
+                        <li><strong>Value:</strong> ${profile.value}</li>
+                        <li><strong>Stressor:</strong> ${profile.stressor}</li>
+                        <li><strong>Coping Style:</strong> ${profile.coping}</li>
+                        <li><strong>Environment:</strong> ${profile.environment}</li>
+                        <li><strong>Adversity:</strong> ${profile.adversity}</li>
+                        <li><strong>Growth:</strong> ${profile.growth}</li>
+                    </ul>
+                `;
+                logEvolution(`Scenario: ${scenario} → ${evolution}`);
+            }
+
+            function logEvolution(message) {
+                evolutionHistory.push(message);
+                document.getElementById('evolutionLog').innerHTML = evolutionHistory.map(e => `<div>• ${e}</div>`).join('');
+                drawLifeline();
+            }
+
+                // Lifeline visualization
+                function drawLifeline() {
+                    const svg = document.getElementById('lifelineSVG');
+                    const width = Math.max(600, evolutionHistory.length * 120);
+                    svg.setAttribute('width', width);
+                    svg.innerHTML = '';
+                    const baseY = 60;
+                    const nodeRadius = 16;
+                    for (let i = 0; i < evolutionHistory.length; i++) {
+                        const x = 60 + i * 100;
+                        // Draw line from previous node
+                        if (i > 0) {
+                            svg.innerHTML += `<line x1="${60 + (i-1)*100}" y1="${baseY}" x2="${x}" y2="${baseY}" stroke="#ffd700" stroke-width="3" />`;
+                        }
+                        // Fork logic: show trait/value changes and adversity/growth
+                        let forkY = baseY;
+                        let forkColor = '';
+                        let label = '';
+                        let pulse = '';
+                        if (evolutionHistory[i].includes('Trait evolved')) {
+                            forkY = baseY - 30; forkColor = '#7ec7ff'; label = profile.trait; pulse = 'lifepulse';
+                        } else if (evolutionHistory[i].includes('Value evolved')) {
+                            forkY = baseY + 30; forkColor = '#ef4444'; label = profile.value; pulse = 'lifepulse';
+                        }
+                        if (forkColor) {
+                            svg.innerHTML += `<line x1="${x}" y1="${baseY}" x2="${x}" y2="${forkY}" stroke="${forkColor}" stroke-width="2" />`;
+                            svg.innerHTML += `<circle cx="${x}" cy="${forkY}" r="${nodeRadius-4}" fill="${forkColor}" class="${pulse}" />`;
+                            svg.innerHTML += `<text x="${x}" y="${forkY-18}" text-anchor="middle" fill="${forkColor}" font-size="13">${label}</text>`;
+                        }
+                        // Main node
+                        svg.innerHTML += `<circle cx="${x}" cy="${baseY}" r="${nodeRadius}" fill="#ffd700" class="lifepulse" />`;
+                        svg.innerHTML += `<text x="${x}" y="${baseY+36}" text-anchor="middle" fill="#ffd700" font-size="12">${i===0?'Start':('Step '+i)}</text>`;
+                        // Adversity/growth markers
+                        if (i > 0) {
+                            svg.innerHTML += `<text x="${x}" y="${baseY-40}" text-anchor="middle" fill="#ef4444" font-size="11">A:${profile.adversity}</text>`;
+                            svg.innerHTML += `<text x="${x}" y="${baseY+50}" text-anchor="middle" fill="#10b981" font-size="11">G:${profile.growth}</text>`;
+                        }
+                    }
+                }
+                // Add animation for lifepulse
+                const style = document.createElement('style');
+                style.innerHTML = `
+                    @keyframes lifepulse {
+                        0% { r: 16; opacity: 0.7; }
+                        50% { r: 22; opacity: 1; }
+                        100% { r: 16; opacity: 0.7; }
+                    }
+                    .lifepulse { animation: lifepulse 1.2s infinite; }
+                    @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+                `;
+                document.head.appendChild(style);
     </script>
 </body>
 </html>
